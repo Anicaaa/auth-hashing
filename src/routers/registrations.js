@@ -1,21 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const prisma = require('../utils/prisma.js')
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const prisma = require("../utils/prisma.js");
 
-router.post('/', async (req, res) => {
-    const { username, password } = req.body;
+//const secret = process.env.JWT_SECRET;
 
-    const createdUser = await prisma.user.create({
-        data: {
-            username,
-            password
-        }
-    });
+router.post("/", async (req, res) => {
+  const { username, password } = req.body;
 
-    res.json({ data: createdUser });
+  const hashPassword = await bcrypt.hash(password, 10);
+  const createdUser = await prisma.user.create({
+    data: {
+      username,
+      password: hashPassword,
+    },
+  });
+
+  res.json({ data: createdUser });
 });
 
 module.exports = router;
